@@ -1,0 +1,47 @@
+{
+  "ActiveEnd": "192.168.1.254",
+  "ActiveLeaseTime": 60,
+  "ActiveStart": "192.168.1.10",
+  "Available": true,
+  "Description": "",
+  "Enabled": true,
+  "Errors": [],
+  "Meta": {},
+  "Name": "eth1",
+  "NextServer": "",
+  "OnlyReservations": false,
+  "Options": [
+    {
+      "Code": 3,
+      "Value": "192.168.1.2"
+    },
+    {
+      "Code": 6,
+      "Value": "8.8.8.8"
+    },
+    {
+      "Code": 15,
+      "Value": "example.com"
+    },
+    {
+      "Code": 1,
+      "Value": "255.255.255.0"
+    },
+    {
+      "Code": 28,
+      "Value": "192.168.1.255"
+    }
+  ],
+  "Pickers": [
+    "hint",
+    "nextFree",
+    "mostExpired"
+  ],
+  "Proxy": false,
+  "ReadOnly": false,
+  "ReservedLeaseTime": 7200,
+  "Strategy": "MAC",
+  "Subnet": "192.168.1.0/24",
+  "Unmanaged": false,
+  "Validated": true
+}

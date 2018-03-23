@@ -1,0 +1,25 @@
+{
+  "Available": true,
+  "Description": "Global profile attached automatically to all machines.",
+  "Errors": [],
+  "Meta": {
+    "color": "blue",
+    "icon": "world",
+    "title": "Digital Rebar Provision"
+  },
+  "Name": "global",
+  "Params": {
+    "change-stage/map": {
+      "centos-7-install": "complete:Success",
+      "discover": "ipmi-configure:Reboot",
+      "ipmi-configure": "centos-7-install:Reboot"
+    },
+    "ipmi/configure/ip-mode": "static",
+    "ipmi/configure/network": false,
+    "ipmi/configure/password": "admin",
+    "ipmi/configure/reserve-ip": false,
+    "ipmi/configure/username": "admin"
+  },
+  "ReadOnly": false,
+  "Validated": true
+}

@@ -46,7 +46,7 @@ compute:
         #Set node memory size, the unit is MB.
         #The default vaule is 512MB
         #
-        size: 2048 
+        size: 1024 
 
     storage_backend:
         #Set drive list and define drive attributes

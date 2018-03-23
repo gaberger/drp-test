@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 # Copyright © 2017 Dell Inc. or its subsidiaries.  All Rights Reserved.
 
 set -x
@@ -53,7 +53,7 @@ fi
 ## Setup docker container 
 docker ps -a |grep -w $NAME
 if [ $? -eq 0 ]; then
-    echo "Going to stop and remove container $NAME because it's running."
+    # echo "Going to stop and remove container $NAME because it's running."
     docker container stop $NAME
     docker container rm $NAME
 fi
@@ -67,7 +67,7 @@ fi
 docker run --privileged -p $PORT:5901 -dit --name $NAME $DOCKER_IMG_NAME:$DOCKER_IMG_TAG /bin/bash
 
 ## Use Pipework to set up the vNode network
-sudo pipework br0 -i eth1 $NAME dhclient
+sudo ./pipework br0 -i eth1 $NAME dhclient
 
 #sudo pipework br0 -i eth1 $NAME 192.168.1.13/24
 docker exec $NAME brctl addbr br0
@@ -80,7 +80,7 @@ if [ $? -ne 0 ]; then
 else
     echo "IP assigned for eth1 is: $IP"
     # PREFIX=$(ipcalc -bc $IP|grep Netmask|awk '{print $4}')
-    eval $(docker run busybox ipcalc -b $IPADDR)
+    eval $(docker run busybox ipcalc -p ${IP})
     docker exec $NAME ip a d $IP/$PREFIX dev eth1
     docker exec $NAME ip a a $IP/$PREFIX dev br0
     docker exec $NAME ip link set br0 up
