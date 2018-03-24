@@ -52,25 +52,24 @@ clean-all: ## Stop DRP container and pull from from DockerHub
 	docker rm --force $(shell docker ps -qa) 
 
 .PHONY: clean-nodes
-clean-nodes: ## Stop node containers
+clean-nodes: ## Stop and remove node containers
 	@echo "+ $@"
-	if [ -z $$"(docker ps --filter name=node)" ]; then \
-		echo "NONE";\
-	else\
-		echo "YES";\
+	@$$(docker ps -a | grep -q node); \
+	if [ $$? -eq 0 ]; then \
+		docker rm --force $(shell docker ps -qa -f name=node);\
 	fi
-
-		# docker rm --force $(shell docker ps -qa);\
-
 
 .PHONY: drp-run
 drp-run: ## Startup DRP container and bind provisioninginterface to br0
 	@echo "+ $@"
-	@docker stop drp | true && \
-	docker run --rm -itd -p8092:8092 -p8091:8091 --name drp digitalrebar/provision:stable && \
-	sleep 10 && \
-	echo "DRP LINK ADDRESS " $(DRP_LINK_ADDR)
-	@sudo ./pipework br0 -i eth1 drp $(DRP_LINK_ADDR)
+	$$(docker ps -a | grep -q drp); \
+	if [ $$? -eq 0 ]; then \
+		docker stop drp;\
+	else\
+		docker run --rm -itd -p8092:8092 -p8091:8091 --name drp digitalrebar/provision:stable && \
+		sleep 10 && \
+		echo "DRP LINK ADDRESS " $(DRP_LINK_ADDR)
+		@sudo ./pipework br0 -i eth1 drp $(DRP_LINK_ADDR)
 
 .PHONY: drp-uploadiso
 drp-uploadiso: ## Upload standard ISOS and set bootenv
@@ -124,7 +123,8 @@ ifeq ($(NODES),0)
 	NODES=1
 endif
 
-	@if [ -n $$"(docker exec drp /provision/drpcli subnets list | grep -q 192.168.1.0/24)" ]; then \
+	$$(docker exec drp /provision/drpcli subnets list | grep -q 192.168.1.0/24); \
+	if [ $$? -eq 0 ]; then \
 		 make drp-configure-subnet;\
 	fi;\
 	for i in `seq 1 $(NODES)`; do \
