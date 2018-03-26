@@ -10,7 +10,7 @@
   "Name": "global",
   "Params": {
     "change-stage/map": {
-      "centos-7-install": "complete:Success",
+      "centos-7-install": "complete-nowait:Reboot",
       "discover": "ipmi-configure:Reboot",
       "ipmi-configure": "centos-7-install:Reboot"
     },

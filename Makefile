@@ -62,14 +62,15 @@ clean-nodes: ## Stop and remove node containers
 .PHONY: drp-run
 drp-run: ## Startup DRP container and bind provisioninginterface to br0
 	@echo "+ $@"
-	$$(docker ps -a | grep -q drp); \
+	@$$(docker ps -a | grep -q drp); \
 	if [ $$? -eq 0 ]; then \
 		docker stop drp;\
 	else\
-		docker run --rm -itd -p8092:8092 -p8091:8091 --name drp digitalrebar/provision:stable && \
-		sleep 10 && \
-		echo "DRP LINK ADDRESS " $(DRP_LINK_ADDR)
-		@sudo ./pipework br0 -i eth1 drp $(DRP_LINK_ADDR)
+		docker run --rm -itd -p8092:8092 -p8091:8091 --name drp digitalrebar/provision:stable; \
+		sleep 5;  \
+		echo "DRP LINK ADDRESS " $(DRP_LINK_ADDR);\
+		sudo ./pipework br0 -i eth1 drp $(DRP_LINK_ADDR);\
+	fi
 
 .PHONY: drp-uploadiso
 drp-uploadiso: ## Upload standard ISOS and set bootenv
@@ -93,6 +94,7 @@ drp-update-profile: ## Update Global profile
 drp-configure: ## Configure DRP server with iso, bootenv and subnet profile
 	make drp-uploadiso
 	make drp-configure-subnet
+	make drp-update-profile
 
 .PHONY: drp-showlogs
 drp-showlogs: ## Watch DRP logs
@@ -123,7 +125,7 @@ ifeq ($(NODES),0)
 	NODES=1
 endif
 
-	$$(docker exec drp /provision/drpcli subnets list | grep -q 192.168.1.0/24); \
+	@$$(docker exec drp /provision/drpcli subnets list | grep -q 192.168.1.0/24); \
 	if [ $$? -eq 0 ]; then \
 		 make drp-configure-subnet;\
 	fi;\
