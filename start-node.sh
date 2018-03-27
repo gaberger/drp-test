@@ -1,6 +1,5 @@
 #!/bin/bash
 # Copyright © 2017 Dell Inc. or its subsidiaries.  All Rights Reserved.
-
 set -x
 
 DOCKER_IMG_NAME="infrasim/infrasim-compute" 

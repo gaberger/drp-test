@@ -1,33 +1,24 @@
 # Set an output prefix, which is the local directory if not specified
 PREFIX?=$(shell pwd)
 # SHELL := /bin/bash
-# Setup name variables for the package/tool
 NAME := drp-test
 PKG := github.com/gaberger/$(NAME)
 
 # Set any default go build tags
 BUILDTAGS :=
 
-BUILDDIR := ${PREFIX}/cross
-DRP_LINK_ADDR := 192.168.1.10/24
-
-API_KEY=f0642fbf-8b30-4198-95f3-5432236b5e95
-PROJECT_ID=1
-RACKN_USERNAME=1
-RACKN_AUTH="?username=${RACKN_USERNAME}"
-
-
-# Populate version variables
-# Add to compile time flags
 VERSION := $(shell cat VERSION.txt)
+
+VNCVIEWER := vncviewer
+
+DRP_LINK_ADDR=192.168.1.10/24
 
 .DEFAULT_GOAL := help
 
 stop: ## Stop all simulator services
+	@echo "+ $@"
 	docker stop drp
 
-
-git-pull: SHELL:=/bin/bash  
 git-pull: ## Pull image from GitHub
 	@echo "+ $@"
 	@pushd provision && \
@@ -60,14 +51,14 @@ clean-nodes: ## Stop and remove node containers
 	fi
 
 .PHONY: drp-run
-drp-run: ## Startup DRP container and bind provisioninginterface to br0
+drp-run: ## Startup DRP container and bind provisioning interface to br0
 	@echo "+ $@"
 	@$$(docker ps -a | grep -q drp); \
 	if [ $$? -eq 0 ]; then \
 		docker stop drp;\
 	else\
-		docker run --rm -itd -p8092:8092 -p8091:8091 --name drp digitalrebar/provision:stable; \
-		sleep 5;  \
+		docker run --rm -itd -p8092:8092 -p8091:8091 --name drp digitalrebar/provision:stable >/dev/null ; \
+		sleep 5; \
 		echo "DRP LINK ADDRESS " $(DRP_LINK_ADDR);\
 		sudo ./pipework br0 -i eth1 drp $(DRP_LINK_ADDR);\
 	fi
@@ -75,7 +66,7 @@ drp-run: ## Startup DRP container and bind provisioninginterface to br0
 .PHONY: drp-uploadiso
 drp-uploadiso: ## Upload standard ISOS and set bootenv
 	@echo "+ $@"
-	@docker exec drp /provision/drpcli bootenvs uploadiso ubuntu-16.04-install
+	@docker exec drp /provision/drpcli bootenvs uploadiso ubuntu-16.04-install 
 	@docker exec drp /provision/drpcli bootenvs uploadiso centos-7-install
 	@docker exec drp /provision/drpcli bootenvs uploadiso sledgehammer && \
 	docker exec drp /provision/drpcli prefs set unknownBootEnv discovery defaultBootEnv sledgehammer defaultStage discover
@@ -115,9 +106,12 @@ drp-showlogs: ## Watch DRP logs
 #     cd ..
 # TODO Check for vncclient
 
-.PHONY: stat-vnc
-start-vnc: 
-	vncviewer localhost:$(PORT) Encryption=PreferOff&
+.PHONY: start-vnc
+start-vnc:
+	@which $(VNCVIEWER); \
+	if [ $$? -eq 0 ]; then \
+		$(VNCVIEWER) localhost:$(PORT) Encryption=PreferOff&\
+	fi
 
 .PHONY: create-nodes
 create-nodes:  ## Create Node Simulators <NODES>=integer
@@ -126,7 +120,7 @@ ifeq ($(NODES),0)
 endif
 
 	@$$(docker exec drp /provision/drpcli subnets list | grep -q 192.168.1.0/24); \
-	if [ $$? -eq 0 ]; then \
+	if [ $$? -eq 1 ]; then \
 		 make drp-configure-subnet;\
 	fi;\
 	for i in `seq 1 $(NODES)`; do \
