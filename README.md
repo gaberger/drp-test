@@ -36,6 +36,13 @@ Other variables are stored in MakeFile
 - DRP_LINK_ADDR Non Docker managed interface setup with PipeWorks
 
 
+# Network Setup
+
+This demo runs all components in Docker containers and leverages the great [Pipework](https://github.com/jpetazzo/pipework) script by jpetazzi
+
+
+[Network](docs/drp.png "Network")
+
 # Geting Started
 
 Command List
