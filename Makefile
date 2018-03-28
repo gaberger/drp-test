@@ -49,6 +49,9 @@ clean-nodes: ## Stop and remove node containers
 	if [ $$? -eq 0 ]; then \
 		docker rm --force $(shell docker ps -qa -f name=node);\
 	fi
+	@for m in $$(docker exec drp /provision/drpcli machines list | jq '.[].Uuid' -r);\
+	do docker exec drp /provision/drpcli machines destroy $$m;\
+	done
 
 .PHONY: drp-run
 drp-run: ## Startup DRP container and bind provisioning interface to br0
