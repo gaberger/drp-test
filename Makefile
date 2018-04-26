@@ -15,10 +15,12 @@ DRP_LINK_ADDR=192.168.1.10/24
 
 .DEFAULT_GOAL := help
 
+.PHONY: stop
 stop: ## Stop all simulator services
 	@echo "+ $@"
 	docker stop drp
 
+.PHONY: git-pull
 git-pull: ## Pull image from GitHub
 	@echo "+ $@"
 	@pushd provision && \
@@ -37,7 +39,7 @@ download:  ## Git clone repo
 	@git clone https://github.com/digitalrebar/provision
 
 .PHONY: clean-all
-clean-all: ## Stop DRP container and pull from from DockerHub
+clean-all: ## Stop DRP container and remove container cache
 	@echo "+ $@"
 	@docker stop drp &2>/dev/null  && \
 	docker rm --force $(shell docker ps -qa) 
@@ -110,7 +112,7 @@ drp-showlogs: ## Watch DRP logs
 # TODO Check for vncclient
 
 .PHONY: start-vnc
-start-vnc:
+start-vnc: ## Start VNC terminal PORT=<PORT>
 	@which $(VNCVIEWER); \
 	if [ $$? -eq 0 ]; then \
 		$(VNCVIEWER) localhost:$(PORT) Encryption=PreferOff&\
